@@ -27,8 +27,6 @@ COPY --from=build-stage --chown=node:node /home/node/app/package*.json ./
 
 RUN npm ci --only=production --silent
 
-RUN ls -la
-
 EXPOSE 4000
 
 CMD [ "node", "./build/index.js" ]
