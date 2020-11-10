@@ -39,7 +39,7 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-${{ env.cache-name }}
 
-      - run: npm ci
+      - run: npm ci --loglevel verbose
       - run: npm run build
       - run: npm test
 
