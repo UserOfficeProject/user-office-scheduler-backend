@@ -39,7 +39,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}
 
-      - run: npm ci
+      # npm install uses the ~/.npm cache
+      - run: npm i --silent
       - run: npm run build
       - run: npm test
 
@@ -55,7 +56,6 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Cache app docker layers
-        id: cached-image
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-layer-cache
@@ -75,7 +75,6 @@ jobs:
         run: echo "Extracted branch ${{ github.head_ref }}"
 
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
