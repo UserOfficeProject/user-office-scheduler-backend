@@ -39,8 +39,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}
 
-      # npm install uses the ~/.npm cache
-      - run: npm i --silent
+      - run: npm ci
       - run: npm run build
       - run: npm test
 
