@@ -59,6 +59,10 @@ export class SystemQuery {
 
   @Query(() => String)
   async schedulerVersion() {
+    if (cached) {
+      return cached;
+    }
+
     try {
       const content = await promises.readFile(
         join(process.cwd(), 'build-version.txt')
