@@ -24,8 +24,6 @@ export class DbStat {
   state: string | null;
 }
 
-let cached: string;
-
 @ObjectType()
 export class HealthStats implements HealthStatsBase {
   @Field(() => String)
@@ -40,6 +38,8 @@ export class SchedulerConfig {
   @Field(() => String)
   authRedirect: string;
 }
+
+let cachedVersion: string;
 
 @Resolver()
 export class SystemQuery {
@@ -59,8 +59,8 @@ export class SystemQuery {
 
   @Query(() => String)
   async schedulerVersion() {
-    if (cached) {
-      return cached;
+    if (cachedVersion) {
+      return cachedVersion;
     }
 
     try {
@@ -68,9 +68,9 @@ export class SystemQuery {
         join(process.cwd(), 'build-version.txt')
       );
 
-      cached = content.toString().trim();
+      cachedVersion = content.toString().trim();
 
-      return cached;
+      return cachedVersion;
     } catch (err) {
       if (err.code !== 'ENOENT') {
         logger.logException(
