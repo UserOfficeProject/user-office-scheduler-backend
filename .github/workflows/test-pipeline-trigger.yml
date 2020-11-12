@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Trigger pipeline
         run: |
-          REPOSITORY=${{ github.repository }}
+          REPOSITORY="${{ github.repository }}"
           RESULT=$(curl -X POST \
             -F token="${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             -F ref=master \
