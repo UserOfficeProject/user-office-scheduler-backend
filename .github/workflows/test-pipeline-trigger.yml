@@ -11,9 +11,17 @@ jobs:
     steps:
       - name: Trigger pipeline
         run: |
-          curl -X POST \
+          RESULT=$(curl -X POST \
             -F token="${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             -F ref=test_autodeploy \
             -F "variables[RUN_DEPLOY]=1" \
             -F "variables[DEPLOY_ENV]=develop" \
-            ${{ secrets.GITLAB_TRIGGER_URL }}
+            -o /dev/null \
+            --silent \
+            --write-out '%{http_code}' \
+            ${{ secrets.GITLAB_TRIGGER_URL }})
+
+            if [[ $RESULT != "201" ]]; then
+              echo "Failed to trigger Gitlab pipeline"
+              exit 1
+            fi
