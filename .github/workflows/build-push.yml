@@ -50,11 +50,13 @@ jobs:
 
       - name: Trigger pipeline
         run: |
+          REPOSITORY=${{ github.repository }}
           RESULT=$(curl -X POST \
             -F token="${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             -F ref=master \
             -F "variables[RUN_DEPLOY]=1" \
             -F "variables[DEPLOY_ENV]=${{ steps.extract_branch.outputs.branch }}" \
+            -F "variables[REPOSITORY]=${REPOSITORY#UserOfficeProject/}" \
             -o /dev/null \
             --silent \
             --write-out '%{http_code}' \
