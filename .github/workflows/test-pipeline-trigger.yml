@@ -1,0 +1,19 @@
+name: Tets pipeline trigger
+
+on:
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger pipeline
+        run: |
+          curl -X POST \
+            -F token="$GITLAB_TRIGGER_TOKEN" \
+            -F ref=test_autodeploy \
+            -F "variables[RUN_DEPLOY]=1" \
+            -F "variables[DEPLOY_ENV]=develop" \
+            $GITLAB_TRIGGER_URL
