@@ -16,7 +16,7 @@ jobs:
             -F token="${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             -F ref=test_autodeploy \
             -F "variables[RUN_DEPLOY]=1" \
-            -F "variables[DEPLOY_ENV]=develop" \
+            -F "variables[BRANCH]=develop" \
             -F "variables[REPOSITORY]=${REPOSITORY#UserOfficeProject/}" \
             -o /dev/null \
             --silent \
