@@ -6,7 +6,10 @@ import {
 import { ScheduledEventFilter } from '../resolvers/queries/ScheduledEventQuery';
 
 export interface ScheduledEventDataSource {
-  create(newScheduledEvent: NewScheduledEventInput): Promise<ScheduledEvent>;
+  create(
+    newScheduledEvent: NewScheduledEventInput,
+    scheduledById: number
+  ): Promise<ScheduledEvent>;
   bulkUpsert(
     scheduledById: number,
     instrumentId: number,

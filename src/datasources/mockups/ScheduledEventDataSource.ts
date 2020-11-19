@@ -39,7 +39,8 @@ export const dummyScheduledEvents: ScheduledEvent[] = [
 export default class MockupScheduledEventDataSource
   implements ScheduledEventDataSource {
   async create(
-    newScheduledEvent: NewScheduledEventInput
+    newScheduledEvent: NewScheduledEventInput,
+    scheduledById: number
   ): Promise<ScheduledEvent> {
     return new ScheduledEvent(
       100,
@@ -48,7 +49,7 @@ export default class MockupScheduledEventDataSource
       newScheduledEvent.bookingType,
       newScheduledEvent.startsAt,
       newScheduledEvent.endsAt,
-      { id: newScheduledEvent.scheduledById },
+      { id: scheduledById },
       newScheduledEvent.description,
       { id: newScheduledEvent.instrumentId }
     );

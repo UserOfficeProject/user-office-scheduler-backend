@@ -36,14 +36,15 @@ export default class PostgreScheduledEventDataSource
   readonly tableName = 'scheduled_events';
 
   async create(
-    newScheduledEvent: NewScheduledEventInput
+    newScheduledEvent: NewScheduledEventInput,
+    scheduledById: number
   ): Promise<ScheduledEvent> {
     const [scheduledEvent] = await database<CreateFields>(this.tableName)
       .insert({
         booking_type: newScheduledEvent.bookingType,
         starts_at: newScheduledEvent.startsAt,
         ends_at: newScheduledEvent.endsAt,
-        scheduled_by: newScheduledEvent.scheduledById,
+        scheduled_by: scheduledById,
         description: newScheduledEvent.description,
         instrument_id: newScheduledEvent.instrumentId,
       })

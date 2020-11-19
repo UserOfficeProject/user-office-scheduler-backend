@@ -31,9 +31,6 @@ export class NewScheduledEventInput implements Partial<ScheduledEventBase> {
   @Field(() => TzLessDateTime)
   endsAt: Date;
 
-  @Field(() => ID)
-  scheduledById: number;
-
   @Field(() => String, { nullable: true })
   description: string | null;
 
