@@ -60,7 +60,7 @@ export default class PostgresEquipmentDataSource
   async getAll(): Promise<Equipment[]> {
     const equipmentRecords = await database<EquipmentRecord>(this.tableName)
       .select('*')
-      .orderBy('equipment_id', 'asc');
+      .orderBy('name', 'asc');
 
     return equipmentRecords.map(createEquipmentObject);
   }
@@ -121,7 +121,7 @@ export default class PostgresEquipmentDataSource
           });
         });
       })
-      .orderBy('equipment_id', 'asc');
+      .orderBy('name', 'asc');
 
     return equipmentRecords.map(createEquipmentObject);
   }
