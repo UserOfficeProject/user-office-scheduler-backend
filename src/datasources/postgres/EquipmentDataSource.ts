@@ -11,7 +11,6 @@ import database, { UNIQUE_CONSTRAINT_VIOLATION } from './database';
 import {
   EquipmentRecord,
   createEquipmentObject,
-  PaginatedRecord,
   EquipmentsScheduledEventsRecord,
 } from './records';
 
@@ -70,16 +69,18 @@ export default class PostgresEquipmentDataSource
     scheduledEvent: ScheduledEvent
   ): Promise<Equipment[]> {
     /**
-     * This queries tries to find every available equipments bv checking:
+     * This queries tries to find every available equipments by checking:
      *  - the equipment is not under scheduled maintenance:
-     *    * maintenance_starts_at is NULL, otherwise may be indefinitely scheduled or have a scheduled interval
-     *    * maintenance_ends_at ends at or before the scheduled event starts (Note: rows with NULL are filtered by postgres)
+     *    * maintenance_starts_at is NULL
+     *    * maintenance_starts_at is not NULL but maintenance_ends_at is NULL, under maintenance indefinitely
+     *    * maintenance_starts_at and maintenance_ends_at overlaps with the scheduled event
      *  - we have no relationship between the scheduled vent and the equipment
      *  - the scheduled event doesn't overlap with other assigned scheduled events
      */
     const equipmentRecords = await database<EquipmentRecord>(this.tableName)
       .select<EquipmentRecord[]>(`${this.tableName}.*`)
       .whereRaw(
+        // TODO: see if we can use knex QB instead of raw
         `equipment_id NOT IN (
           SELECT eq.equipment_id 
           FROM ${this.tableName} eq 
@@ -100,8 +101,25 @@ export default class PostgresEquipmentDataSource
         }
       )
       .where(qb => {
+        // available, not under maintenance
         qb.where('maintenance_starts_at', null);
-        qb.orWhere('maintenance_ends_at', '<=', scheduledEvent.startsAt);
+        qb.orWhere(qb => {
+          // scheduled for maintenance indefinitely with a start date
+          qb.whereNot('maintenance_starts_at', null);
+          qb.where('maintenance_ends_at', null);
+          qb.where('maintenance_starts_at', '>=', scheduledEvent.endsAt);
+        });
+        qb.orWhere(qb => {
+          qb.whereNot('maintenance_starts_at', null);
+          qb.whereNot('maintenance_ends_at', null);
+          qb.whereNot(qb => {
+            // checking overlap
+            qb.where('maintenance_starts_at', '>=', scheduledEvent.startsAt);
+            qb.andWhere('maintenance_ends_at', '<=', scheduledEvent.endsAt);
+            qb.orWhere('maintenance_starts_at', '<', scheduledEvent.endsAt);
+            qb.andWhere('maintenance_ends_at', '>', scheduledEvent.startsAt);
+          });
+        });
       })
       .orderBy('equipment_id', 'asc');
 

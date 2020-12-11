@@ -3,7 +3,6 @@ import { EquipmentDataSource } from '../datasources/EquipmentDataSource';
 import { ScheduledEventDataSource } from '../datasources/ScheduledEventDataSource';
 import Authorized from '../decorators/Authorized';
 import { Equipment, EquipmentAssignmentStatus } from '../models/Equipment';
-import { PaginatedClass } from '../resolvers/types/Paginated';
 
 export default class EquipmentQueries {
   constructor(

@@ -1,22 +1,11 @@
 import { Type } from 'class-transformer';
-import {
-  Field,
-  ID,
-  ObjectType,
-  Resolver,
-  FieldResolver,
-  Root,
-  Ctx,
-} from 'type-graphql';
+import { Field, ID, ObjectType } from 'type-graphql';
 
-import { ResolverContext } from '../../context';
 import {
   Equipment as EquipmentBase,
   EquipmentAssignmentStatus,
 } from '../../models/Equipment';
 import { TzLessDateTime } from '../CustomScalars';
-import Paginated from './Paginated';
-import { ScheduledEvent } from './ScheduledEvent';
 import { User } from './User';
 
 @ObjectType()
