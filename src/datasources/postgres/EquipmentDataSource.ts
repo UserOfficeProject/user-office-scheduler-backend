@@ -5,6 +5,7 @@ import {
   EquipmentInput,
   AssignEquipmentsToScheduledEventInput,
   DeleteEquipmentAssignmentInput,
+  ConfirmEquipmentAssignmentInput,
 } from '../../resolvers/mutations/EquipmentMutation';
 import { EquipmentDataSource } from '../EquipmentDataSource';
 import database, { UNIQUE_CONSTRAINT_VIOLATION } from './database';
@@ -150,6 +151,23 @@ export default class PostgresEquipmentDataSource
     }));
   }
 
+  async equipmentAssignmentStatus(
+    scheduledEventId: number,
+    equipmentId: number
+  ): Promise<EquipmentAssignmentStatus | null> {
+    const equipmentAssignmentRecord = await database<
+      EquipmentsScheduledEventsRecord
+    >(this.scheduledEventsEquipmentsTable)
+      .select<Pick<EquipmentsScheduledEventsRecord, 'status'>>('status')
+      .where('scheduled_event_id', scheduledEventId)
+      .where('equipment_id', equipmentId)
+      .first();
+
+    return (
+      (equipmentAssignmentRecord?.status as EquipmentAssignmentStatus) ?? null
+    );
+  }
+
   async assign(input: AssignEquipmentsToScheduledEventInput): Promise<boolean> {
     try {
       const equipments = await database<EquipmentRecord>(this.tableName)
@@ -183,17 +201,29 @@ export default class PostgresEquipmentDataSource
   }
 
   async deleteAssignment(
-    deleteEquipmentAssignmentInput: DeleteEquipmentAssignmentInput
+    input: DeleteEquipmentAssignmentInput
   ): Promise<boolean> {
     const deletedRecords = await database<EquipmentsScheduledEventsRecord>(
       this.scheduledEventsEquipmentsTable
     )
       .del()
-      .where('equipment_id', deleteEquipmentAssignmentInput.equipmentId)
-      .where(
-        'scheduled_event_id',
-        deleteEquipmentAssignmentInput.scheduledEventId
-      )
+      .where('equipment_id', input.equipmentId)
+      .where('scheduled_event_id', input.scheduledEventId)
+      .returning('*');
+
+    return deletedRecords.length === 1;
+  }
+
+  async confirmAssignment(
+    input: ConfirmEquipmentAssignmentInput
+  ): Promise<boolean> {
+    const deletedRecords = await database<EquipmentsScheduledEventsRecord>(
+      this.scheduledEventsEquipmentsTable
+    )
+      .update({ status: input.newStatus })
+      .where('equipment_id', input.equipmentId)
+      .where('scheduled_event_id', input.scheduledEventId)
+      .where('status', EquipmentAssignmentStatus.PENDING)
       .returning('*');
 
     return deletedRecords.length === 1;

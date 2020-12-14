@@ -9,9 +9,12 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
-import { Equipment as EquipmentBase } from '../../models/Equipment';
+import {
+  Equipment as EquipmentBase,
+  EquipmentAssignmentStatus,
+} from '../../models/Equipment';
 import { TzLessDateTime } from '../CustomScalars';
-import { EquipmentResponseWrap } from '../types/wrappers';
+import { EquipmentResponseWrap, ResponseWrapBase } from '../types/wrappers';
 import { wrapResponse } from '../wrapResponse';
 
 @InputType()
@@ -53,6 +56,18 @@ export class DeleteEquipmentAssignmentInput {
   equipmentId: number;
 }
 
+@InputType()
+export class ConfirmEquipmentAssignmentInput {
+  @Field(() => ID)
+  scheduledEventId: number;
+
+  @Field(() => ID)
+  equipmentId: number;
+
+  @Field(() => EquipmentAssignmentStatus)
+  newStatus: EquipmentAssignmentStatus;
+}
+
 @Resolver()
 export class EquipmentMutation {
   @Mutation(() => EquipmentResponseWrap)
@@ -60,7 +75,7 @@ export class EquipmentMutation {
     @Ctx() ctx: ResolverContext,
     @Arg('newEquipmentInput', () => EquipmentInput)
     newEquipmentInput: EquipmentInput
-  ) {
+  ): Promise<ResponseWrapBase<EquipmentResponseWrap>> {
     return wrapResponse(
       ctx.mutations.equipment.create(ctx, newEquipmentInput),
       EquipmentResponseWrap
@@ -73,7 +88,7 @@ export class EquipmentMutation {
     @Arg('id', () => ID) id: number,
     @Arg('updateEquipmentInput', () => EquipmentInput)
     updateEquipmentInput: EquipmentInput
-  ) {
+  ): Promise<ResponseWrapBase<EquipmentResponseWrap>> {
     return wrapResponse(
       ctx.mutations.equipment.update(ctx, id, updateEquipmentInput),
       EquipmentResponseWrap
@@ -88,7 +103,7 @@ export class EquipmentMutation {
       () => AssignEquipmentsToScheduledEventInput
     )
     assignEquipmentsToScheduledEventInput: AssignEquipmentsToScheduledEventInput
-  ) {
+  ): Promise<boolean> {
     return ctx.mutations.equipment.assign(
       ctx,
       assignEquipmentsToScheduledEventInput
@@ -100,10 +115,25 @@ export class EquipmentMutation {
     @Ctx() ctx: ResolverContext,
     @Arg('deleteEquipmentAssignmentInput', () => DeleteEquipmentAssignmentInput)
     deleteEquipmentAssignmentInput: DeleteEquipmentAssignmentInput
-  ) {
+  ): Promise<boolean> {
     return ctx.mutations.equipment.deleteAssignment(
       ctx,
       deleteEquipmentAssignmentInput
+    );
+  }
+
+  @Mutation(() => Boolean)
+  confirmEquipmentAssignment(
+    @Ctx() ctx: ResolverContext,
+    @Arg(
+      'confirmEquipmentAssignmentInput',
+      () => ConfirmEquipmentAssignmentInput
+    )
+    confirmEquipmentAssignmentInput: ConfirmEquipmentAssignmentInput
+  ): Promise<boolean> {
+    return ctx.mutations.equipment.confirmAssignment(
+      ctx,
+      confirmEquipmentAssignmentInput
     );
   }
 }

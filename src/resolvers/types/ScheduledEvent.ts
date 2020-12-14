@@ -7,6 +7,7 @@ import {
   Resolver,
   Root,
   Ctx,
+  Arg,
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
@@ -64,6 +65,19 @@ export class EquipmentResolver {
     return ctx.queries.equipment.scheduledEventEquipments(
       ctx,
       scheduledEvent.id
+    );
+  }
+
+  @FieldResolver(() => EquipmentAssignmentStatus, { nullable: true })
+  equipmentAssignmentStatus(
+    @Root() scheduledEvent: ScheduledEvent,
+    @Ctx() ctx: ResolverContext,
+    @Arg('equipmentId', () => ID) equipmentId: number
+  ): Promise<EquipmentAssignmentStatus | null> {
+    return ctx.queries.equipment.equipmentAssignmentStatus(
+      ctx,
+      scheduledEvent.id,
+      equipmentId
     );
   }
 }

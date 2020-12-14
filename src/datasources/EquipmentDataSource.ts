@@ -4,6 +4,7 @@ import {
   EquipmentInput,
   AssignEquipmentsToScheduledEventInput,
   DeleteEquipmentAssignmentInput,
+  ConfirmEquipmentAssignmentInput,
 } from '../resolvers/mutations/EquipmentMutation';
 
 export interface EquipmentDataSource {
@@ -17,11 +18,18 @@ export interface EquipmentDataSource {
   scheduledEventEquipments(
     scheduledEventId: number
   ): Promise<Array<Equipment & { status: EquipmentAssignmentStatus }>>;
+  equipmentAssignmentStatus(
+    scheduledEventId: number,
+    equipmentId: number
+  ): Promise<EquipmentAssignmentStatus | null>;
   availableEquipments(scheduledEvent: ScheduledEvent): Promise<Equipment[]>;
   assign(
     assignEquipmentsToScheduledEventInput: AssignEquipmentsToScheduledEventInput
   ): Promise<boolean>;
   deleteAssignment(
     deleteEquipmentAssignmentInput: DeleteEquipmentAssignmentInput
+  ): Promise<boolean>;
+  confirmAssignment(
+    confirmEquipmentAssignmentInput: ConfirmEquipmentAssignmentInput
   ): Promise<boolean>;
 }

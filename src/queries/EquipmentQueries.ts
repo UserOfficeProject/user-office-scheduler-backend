@@ -46,4 +46,16 @@ export default class EquipmentQueries {
   ): Promise<Array<Equipment & { status: EquipmentAssignmentStatus }>> {
     return this.equipmentDataSource.scheduledEventEquipments(scheduledEventId);
   }
+
+  @Authorized()
+  equipmentAssignmentStatus(
+    ctx: ResolverContext,
+    scheduledEventId: number,
+    equipmentId: number
+  ): Promise<EquipmentAssignmentStatus | null> {
+    return this.equipmentDataSource.equipmentAssignmentStatus(
+      scheduledEventId,
+      equipmentId
+    );
+  }
 }

@@ -7,6 +7,7 @@ import {
   EquipmentInput,
   AssignEquipmentsToScheduledEventInput,
   DeleteEquipmentAssignmentInput,
+  ConfirmEquipmentAssignmentInput,
 } from '../resolvers/mutations/EquipmentMutation';
 
 export default class EquipmentMutations {
@@ -50,6 +51,7 @@ export default class EquipmentMutations {
       assignEquipmentsToScheduledEventInput
     );
   }
+
   @Authorized()
   deleteAssignment(
     ctx: ResolverContext,
@@ -60,6 +62,19 @@ export default class EquipmentMutations {
 
     return this.equipmentDataSource.deleteAssignment(
       deleteEquipmentAssignmentInput
+    );
+  }
+
+  @Authorized()
+  confirmAssignment(
+    ctx: ResolverContext,
+    confirmEquipmentAssignmentInput: ConfirmEquipmentAssignmentInput
+  ) {
+    // TODO: check if has permission
+    //  assignEquipmentsToScheduledEventInput.proposalBookingId
+
+    return this.equipmentDataSource.confirmAssignment(
+      confirmEquipmentAssignmentInput
     );
   }
 }
