@@ -7,6 +7,7 @@ import {
 } from '../helpers/instrumentHelpers';
 import { ScheduledEvent } from '../models/ScheduledEvent';
 import { ScheduledEventFilter } from '../resolvers/queries/ScheduledEventQuery';
+import { ProposalBookingScheduledEventFilter } from '../resolvers/types/ProposalBooking';
 import { Roles } from '../types/shared';
 
 export default class ScheduledEventQueries {
@@ -34,15 +35,17 @@ export default class ScheduledEventQueries {
     return this.scheduledEventDataSource.getAll(filter);
   }
 
-  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST])
+  // @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST])
   async proposalBookingScheduledEvents(
     ctx: ResolverContext,
-    proposalBookingId: number
+    proposalBookingId: number,
+    filter?: ProposalBookingScheduledEventFilter
   ): Promise<ScheduledEvent[]> {
-    await helperInstrumentScientistHasAccess(ctx, proposalBookingId);
+    // await helperInstrumentScientistHasAccess(ctx, proposalBookingId);
 
     return this.scheduledEventDataSource.proposalBookingScheduledEvents(
-      proposalBookingId
+      proposalBookingId,
+      filter
     );
   }
 

@@ -10,4 +10,5 @@ export interface HealthStats {
 
 export interface SystemDataSource {
   healthCheck(): Promise<HealthStats>;
+  resetDB(): Promise<void>;
 }

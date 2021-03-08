@@ -6,6 +6,7 @@ import {
   helperInstrumentScientistHasAccess,
 } from '../helpers/instrumentHelpers';
 import { ProposalBooking } from '../models/ProposalBooking';
+import { ProposalProposalBookingFilter } from '../resolvers/types/Proposal';
 import { Roles } from '../types/shared';
 
 export default class ProposalBookingQueries {
@@ -32,6 +33,26 @@ export default class ProposalBookingQueries {
     }
 
     await helperInstrumentScientistHasAccess(ctx, proposalBooking);
+
+    return proposalBooking;
+  }
+
+  @Authorized()
+  async getByProposalId(
+    ctx: ResolverContext,
+    proposalId: number,
+    filter?: ProposalProposalBookingFilter
+  ): Promise<ProposalBooking | null> {
+    const proposalBooking = await this.proposalBookingDataSource.getByProposalId(
+      proposalId,
+      filter
+    );
+
+    if (!proposalBooking) {
+      return null;
+    }
+
+    // await helperInstrumentScientistHasAccess(ctx, proposalBooking);
 
     return proposalBooking;
   }
