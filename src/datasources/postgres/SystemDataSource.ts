@@ -81,7 +81,7 @@ export default class PostgreSystemDataSource implements SystemDataSource {
           const msg = `${file} failed: ${err}`;
           log.push(msg);
 
-          throw log;
+          throw log.join('\n');
         });
     }
 
