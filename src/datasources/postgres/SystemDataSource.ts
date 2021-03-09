@@ -57,7 +57,9 @@ export default class PostgreSystemDataSource implements SystemDataSource {
   }
 
   private async applyPatches() {
-    const log = [`Upgrade started: ${Date.now()}`];
+    logger.logInfo('Applying patches started', { timestamp: new Date() });
+
+    const log: string[] = [];
 
     const files = await fs.readdir(dbPatchesFolderPath);
 
@@ -89,7 +91,9 @@ export default class PostgreSystemDataSource implements SystemDataSource {
   }
 
   private async applySeeds() {
-    const log = ['Applying DB seeds'];
+    logger.logInfo('Applying seeds started', { timestamp: new Date() });
+
+    const log: string[] = [];
 
     const files = await fs.readdir(seedsPath);
 
