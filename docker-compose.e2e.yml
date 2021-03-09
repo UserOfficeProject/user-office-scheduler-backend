@@ -5,7 +5,7 @@ services:
   scheduler-backend:
     image: "dmsc/duo-scheduler-backend:${USER_OFFICE_SCHEDULER_BACKEND_TAG}"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DATABASE_HOSTNAME=scheduler-db
       - DATABASE_PORT=5432
       - DATABASE_USER=schedulerUser
