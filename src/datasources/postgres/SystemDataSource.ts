@@ -11,6 +11,10 @@ const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
 export default class PostgreSystemDataSource implements SystemDataSource {
   constructor() {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
     this.initDb();
   }
 
@@ -87,7 +91,7 @@ export default class PostgreSystemDataSource implements SystemDataSource {
         });
     }
 
-    logger.logInfo('Applying patches finished', { log });
+    logger.logInfo('Applying patches finished', {});
   }
 
   private async applySeeds() {
@@ -118,7 +122,7 @@ export default class PostgreSystemDataSource implements SystemDataSource {
         });
     }
 
-    logger.logInfo('Applying seeds finished', { log });
+    logger.logInfo('Applying seeds finished', {});
   }
 
   private async initDb() {
