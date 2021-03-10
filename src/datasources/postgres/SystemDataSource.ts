@@ -143,10 +143,10 @@ export default class PostgreSystemDataSource implements SystemDataSource {
             process.exit(1);
           }
 
-          setTimeout(initDb, 150);
+          setTimeout(initDb, 1000);
         });
     };
 
-    setTimeout(initDb, 150);
+    setTimeout(initDb, 500);
   }
 }
