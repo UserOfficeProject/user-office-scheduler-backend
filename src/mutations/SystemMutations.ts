@@ -9,11 +9,11 @@ export default class SystemMutations {
   constructor(private systemDataSource: SystemDataSource) {}
 
   @Authorized([Roles.USER_OFFICER])
-  async resetDb(ctx: ResolverContext): Promise<string> {
+  async resetDb(ctx: ResolverContext, includeSeeds: boolean): Promise<string> {
     if (process.env.NODE_ENV === 'development') {
       logger.logWarn('Resetting database', {});
 
-      await this.systemDataSource.resetDB();
+      await this.systemDataSource.resetDB(includeSeeds);
 
       return 'OK';
     } else {

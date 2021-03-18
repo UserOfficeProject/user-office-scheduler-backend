@@ -91,7 +91,6 @@ services:
       NODE_ENV: development
       UO_FEATURE_DISABLE_EAM: 1
       USER_OFFICE_FACTORY_ENDPOINT: http://factory:4500/generate
-      INCLUDE_SEEDS: 1
       RABBITMQ_HOSTNAME: rabbitmq
     labels:
       - "traefik.frontend.rule=PathPrefix:/api, /downloads, /files, /download, /uploads"

@@ -1149,6 +1149,11 @@ export type MutationNotifyProposalArgs = {
 };
 
 
+export type MutationPrepareDbArgs = {
+  includeSeeds?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type MutationRemoveUserForReviewArgs = {
   sepId: Scalars['Int'];
   reviewId: Scalars['Int'];

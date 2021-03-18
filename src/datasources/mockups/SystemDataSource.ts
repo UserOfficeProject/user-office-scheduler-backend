@@ -1,7 +1,7 @@
 import { SystemDataSource, HealthStats } from '../SystemDataSource';
 
 export default class MockSystemDataSource implements SystemDataSource {
-  resetDB(): Promise<void> {
+  resetDB(includeSeeds: boolean): Promise<void> {
     throw new Error('Method not implemented.');
   }
   async healthCheck(): Promise<HealthStats> {

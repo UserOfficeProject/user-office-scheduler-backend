@@ -47,7 +47,7 @@ export default class PostgreSystemDataSource implements SystemDataSource {
     }
   }
 
-  async resetDB() {
+  async resetDB(includeSeeds: boolean) {
     try {
       await database.raw(`
       DROP SCHEMA public CASCADE;
@@ -58,7 +58,7 @@ export default class PostgreSystemDataSource implements SystemDataSource {
 
       await this.applyPatches();
 
-      if (process.env.INCLUDE_SEEDS === '1') {
+      if (process.env.INCLUDE_SEEDS === '1' || includeSeeds) {
         await this.applySeeds();
       }
     } catch (e) {
