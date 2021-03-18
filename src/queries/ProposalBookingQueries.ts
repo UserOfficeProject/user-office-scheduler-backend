@@ -1,10 +1,11 @@
 import { ResolverContext } from '../context';
 import { ProposalBookingDataSource } from '../datasources/ProposalBookingDataSource';
 import Authorized from '../decorators/Authorized';
+import { instrumentScientistHasInstrument } from '../helpers/instrumentHelpers';
 import {
-  helperInstrumentScientistHasInstrument,
-  helperInstrumentScientistHasAccess,
-} from '../helpers/instrumentHelpers';
+  instrumentScientistHasAccess,
+  userHacAccess,
+} from '../helpers/permissionHelpers';
 import { ProposalBooking } from '../models/ProposalBooking';
 import { ProposalProposalBookingFilter } from '../resolvers/types/Proposal';
 import { Roles } from '../types/shared';
@@ -17,14 +18,16 @@ export default class ProposalBookingQueries {
     ctx: ResolverContext,
     instrumentId: number
   ): Promise<ProposalBooking[]> {
-    await helperInstrumentScientistHasInstrument(ctx, instrumentId);
+    if (!(await instrumentScientistHasInstrument(ctx, instrumentId))) {
+      return [];
+    }
 
     return this.proposalBookingDataSource.instrumentProposalBookings(
       instrumentId
     );
   }
 
-  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST])
+  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST, Roles.USER])
   async get(ctx: ResolverContext, id: number): Promise<ProposalBooking | null> {
     const proposalBooking = await this.proposalBookingDataSource.get(id);
 
@@ -32,12 +35,17 @@ export default class ProposalBookingQueries {
       return null;
     }
 
-    await helperInstrumentScientistHasAccess(ctx, proposalBooking);
+    if (
+      !(await instrumentScientistHasAccess(ctx, proposalBooking)) &&
+      !(await userHacAccess(ctx, proposalBooking))
+    ) {
+      return null;
+    }
 
     return proposalBooking;
   }
 
-  @Authorized()
+  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST, Roles.USER])
   async getByProposalId(
     ctx: ResolverContext,
     proposalId: number,
@@ -52,7 +60,12 @@ export default class ProposalBookingQueries {
       return null;
     }
 
-    // await helperInstrumentScientistHasAccess(ctx, proposalBooking);
+    if (
+      !(await instrumentScientistHasAccess(ctx, proposalBooking)) &&
+      !(await userHacAccess(ctx, proposalBooking))
+    ) {
+      return null;
+    }
 
     return proposalBooking;
   }

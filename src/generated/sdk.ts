@@ -292,6 +292,7 @@ export enum Event {
   PROPOSAL_SEP_REVIEW_SUBMITTED = 'PROPOSAL_SEP_REVIEW_SUBMITTED',
   PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED = 'PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED',
   PROPOSAL_SEP_MEETING_SUBMITTED = 'PROPOSAL_SEP_MEETING_SUBMITTED',
+  PROPOSAL_MANAGEMENT_DECISION_UPDATED = 'PROPOSAL_MANAGEMENT_DECISION_UPDATED',
   PROPOSAL_MANAGEMENT_DECISION_SUBMITTED = 'PROPOSAL_MANAGEMENT_DECISION_SUBMITTED',
   PROPOSAL_INSTRUMENT_SUBMITTED = 'PROPOSAL_INSTRUMENT_SUBMITTED',
   PROPOSAL_ACCEPTED = 'PROPOSAL_ACCEPTED',
@@ -539,6 +540,7 @@ export type Mutation = {
   deleteProposal: ProposalResponseWrap;
   deleteQuestion: QuestionResponseWrap;
   deleteSample: SampleResponseWrap;
+  deleteSEP: SepResponseWrap;
   deleteShipment: ShipmentResponseWrap;
   deleteTemplate: TemplateResponseWrap;
   deleteTopic: TemplateResponseWrap;
@@ -556,6 +558,7 @@ export type Mutation = {
   deleteProposalStatus: ProposalStatusResponseWrap;
   deleteProposalWorkflow: ProposalWorkflowResponseWrap;
   submitProposal: ProposalResponseWrap;
+  submitShipment: ShipmentResponseWrap;
   submitTechnicalReview: TechnicalReviewResponseWrap;
   token: TokenResponseWrap;
   selectRole: TokenResponseWrap;
@@ -676,6 +679,8 @@ export type MutationAdministrationProposalArgs = {
   finalStatus?: Maybe<ProposalEndStatus>;
   statusId?: Maybe<Scalars['Int']>;
   rankOrder?: Maybe<Scalars['Int']>;
+  managementTimeAllocation?: Maybe<Scalars['Int']>;
+  managementDecisionSubmitted?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -863,6 +868,7 @@ export type MutationUpdateShipmentArgs = {
   proposalId?: Maybe<Scalars['Int']>;
   title?: Maybe<Scalars['String']>;
   status?: Maybe<ShipmentStatus>;
+  externalRef?: Maybe<Scalars['String']>;
 };
 
 
@@ -1092,6 +1098,11 @@ export type MutationDeleteSampleArgs = {
 };
 
 
+export type MutationDeleteSepArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type MutationDeleteShipmentArgs = {
   shipmentId: Scalars['Int'];
 };
@@ -1173,6 +1184,11 @@ export type MutationDeleteProposalWorkflowArgs = {
 
 export type MutationSubmitProposalArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationSubmitShipmentArgs = {
+  shipmentId: Scalars['Int'];
 };
 
 
@@ -1295,6 +1311,8 @@ export type Proposal = {
   commentForManagement: Maybe<Scalars['String']>;
   notified: Scalars['Boolean'];
   submitted: Scalars['Boolean'];
+  managementTimeAllocation: Maybe<Scalars['Int']>;
+  managementDecisionSubmitted: Scalars['Boolean'];
   users: Array<BasicUserDetails>;
   proposer: Maybe<BasicUserDetails>;
   status: Maybe<ProposalStatus>;
@@ -1500,6 +1518,7 @@ export type Query = {
   instrumentScientistHasAccess: Maybe<Scalars['Boolean']>;
   isNaturalKeyPresent: Maybe<Scalars['Boolean']>;
   proposal: Maybe<Proposal>;
+  userHasAccessToProposal: Maybe<Scalars['Boolean']>;
   proposalStatus: Maybe<ProposalStatus>;
   proposalStatuses: Maybe<Array<ProposalStatus>>;
   proposalsView: Maybe<Array<ProposalView>>;
@@ -1662,6 +1681,11 @@ export type QueryProposalArgs = {
 };
 
 
+export type QueryUserHasAccessToProposalArgs = {
+  proposalId: Scalars['Int'];
+};
+
+
 export type QueryProposalStatusArgs = {
   id: Scalars['Int'];
 };
@@ -1799,7 +1823,7 @@ export type Service = {
 
 export type Question = {
   __typename?: 'Question';
-  proposalQuestionId: Scalars['String'];
+  id: Scalars['String'];
   categoryId: TemplateCategoryId;
   naturalKey: Scalars['String'];
   dataType: DataType;
@@ -1838,7 +1862,8 @@ export enum QuestionFilterCompareOperator {
   GREATER_THAN = 'GREATER_THAN',
   LESS_THAN = 'LESS_THAN',
   EQUALS = 'EQUALS',
-  INCLUDES = 'INCLUDES'
+  INCLUDES = 'INCLUDES',
+  EXISTS = 'EXISTS'
 }
 
 export type QuestionFilterInput = {
@@ -2358,6 +2383,16 @@ export type InstrumentScientistHasInstrumentQuery = (
   & Pick<Query, 'instrumentScientistHasInstrument'>
 );
 
+export type UserHasAccessQueryVariables = Exact<{
+  proposalId: Scalars['Int'];
+}>;
+
+
+export type UserHasAccessQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'userHasAccessToProposal'>
+);
+
 
 export const InstrumentScientistHasAccessDocument = gql`
     query instrumentScientistHasAccess($proposalId: Int!, $instrumentId: Int!) {
@@ -2372,6 +2407,11 @@ export const InstrumentScientistHasInstrumentDocument = gql`
   instrumentScientistHasInstrument(instrumentId: $instrumentId)
 }
     `;
+export const UserHasAccessDocument = gql`
+    query userHasAccess($proposalId: Int!) {
+  userHasAccessToProposal(proposalId: $proposalId)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: () => Promise<T>) => Promise<T>;
 
@@ -2384,6 +2424,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     instrumentScientistHasInstrument(variables: InstrumentScientistHasInstrumentQueryVariables): Promise<InstrumentScientistHasInstrumentQuery> {
       return withWrapper(() => client.request<InstrumentScientistHasInstrumentQuery>(print(InstrumentScientistHasInstrumentDocument), variables));
+    },
+    userHasAccess(variables: UserHasAccessQueryVariables): Promise<UserHasAccessQuery> {
+      return withWrapper(() => client.request<UserHasAccessQuery>(print(UserHasAccessDocument), variables));
     }
   };
 }
