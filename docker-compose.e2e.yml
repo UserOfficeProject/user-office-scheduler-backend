@@ -1,9 +1,9 @@
-version: '3.1'
+version: "3.1"
 
 # Used by user-office-develop to be able to run every components
 services:
   scheduler-backend:
-    image: 'dmsc/duo-scheduler-backend:${USER_OFFICE_SCHEDULER_BACKEND_TAG}'
+    image: "dmsc/duo-scheduler-backend:${USER_OFFICE_SCHEDULER_BACKEND_TAG}"
     environment:
       NODE_ENV: development
       DATABASE_HOSTNAME: scheduler-db
@@ -28,4 +28,4 @@ services:
     ports:
       - 5432
     volumes:
-      - './${USER_OFFICE_SCHEDULER_BACKEND_DIR}/db_patches/:/docker-entrypoint-initdb.d/'
+      - "./${USER_OFFICE_SCHEDULER_BACKEND_DIR}/db_patches/:/docker-entrypoint-initdb.d/"
