@@ -4,6 +4,7 @@ import Authorized from '../decorators/Authorized';
 import { instrumentScientistHasInstrument } from '../helpers/instrumentHelpers';
 import {
   instrumentScientistHasAccess,
+  isUserOfficer,
   userHacAccess,
 } from '../helpers/permissionHelpers';
 import { ScheduledEvent } from '../models/ScheduledEvent';
@@ -94,10 +95,14 @@ export default class ScheduledEventQueries {
     startsAt: Date,
     endsAt: Date
   ) {
+    // NOTE: For USER_OFFICER send null to recieve all equipment events
+    const userId = isUserOfficer(ctx) ? null : ctx.user?.id;
+
     return this.scheduledEventDataSource.equipmentScheduledEvents(
       equipmentIds,
       startsAt,
-      endsAt
+      endsAt,
+      userId
     );
   }
 }

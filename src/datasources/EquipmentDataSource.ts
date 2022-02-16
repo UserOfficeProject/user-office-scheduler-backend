@@ -27,7 +27,7 @@ export interface EquipmentDataSource {
   get(id: number): Promise<Equipment | null>;
   getAll(equipmentIds?: number[]): Promise<Equipment[]>;
   getAllUserEquipments(
-    userId: string,
+    userId: number,
     userInstrumentIds: number[],
     equipmentIds?: number[]
   ): Promise<Equipment[]>;
