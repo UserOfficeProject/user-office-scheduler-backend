@@ -14,7 +14,11 @@ import {
   EquipmentAssignmentStatus,
 } from '../../models/Equipment';
 import { TzLessDateTime } from '../CustomScalars';
-import { EquipmentResponseWrap, ResponseWrapBase } from '../types/wrappers';
+import {
+  EquipmentResponseWrap,
+  ResponseWrapBase,
+  SchedulerSuccessResponseWrap,
+} from '../types/wrappers';
 import { wrapResponse } from '../wrapResponse';
 
 @InputType()
@@ -102,7 +106,7 @@ export class EquipmentMutation {
     @Ctx() ctx: ResolverContext,
     @Arg('newEquipmentInput', () => EquipmentInput)
     newEquipmentInput: EquipmentInput
-  ): Promise<ResponseWrapBase<EquipmentResponseWrap>> {
+  ): Promise<ResponseWrapBase> {
     return wrapResponse(
       ctx.mutations.equipment.create(ctx, newEquipmentInput),
       EquipmentResponseWrap
@@ -115,7 +119,7 @@ export class EquipmentMutation {
     @Arg('id', () => Int) id: number,
     @Arg('updateEquipmentInput', () => EquipmentInput)
     updateEquipmentInput: EquipmentInput
-  ): Promise<ResponseWrapBase<EquipmentResponseWrap>> {
+  ): Promise<ResponseWrapBase> {
     return wrapResponse(
       ctx.mutations.equipment.update(ctx, { id, ...updateEquipmentInput }),
       EquipmentResponseWrap
@@ -149,7 +153,7 @@ export class EquipmentMutation {
     );
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => SchedulerSuccessResponseWrap)
   confirmEquipmentAssignment(
     @Ctx() ctx: ResolverContext,
     @Arg(
@@ -157,10 +161,13 @@ export class EquipmentMutation {
       () => ConfirmEquipmentAssignmentInput
     )
     confirmEquipmentAssignmentInput: ConfirmEquipmentAssignmentInput
-  ): Promise<boolean> {
-    return ctx.mutations.equipment.confirmAssignment(
-      ctx,
-      confirmEquipmentAssignmentInput
+  ) {
+    return wrapResponse(
+      ctx.mutations.equipment.confirmAssignment(
+        ctx,
+        confirmEquipmentAssignmentInput
+      ),
+      SchedulerSuccessResponseWrap
     );
   }
 

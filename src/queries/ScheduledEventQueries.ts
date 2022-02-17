@@ -88,7 +88,7 @@ export default class ScheduledEventQueries {
     );
   }
 
-  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST]) // TODO: make sure we use the right permissions
+  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST])
   async equipmentScheduledEvents(
     ctx: ResolverContext,
     equipmentIds: number[],
