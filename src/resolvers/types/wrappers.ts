@@ -4,7 +4,9 @@ import { Response } from '../Decorators';
 import { Equipment } from './Equipment';
 import { LostTime } from './LostTime';
 import { ProposalBooking } from './ProposalBooking';
+import { Rejection } from './Rejection';
 import { ScheduledEvent } from './ScheduledEvent';
+import { ScheduledEventWithRejection } from './ScheduledEventWithRejection';
 
 @ObjectType()
 export class ResponseWrapBase {
@@ -29,8 +31,8 @@ export class ScheduledEventResponseWrap extends ResponseWrapBase {
 @ObjectType()
 export class ScheduledEventsResponseWrap extends ResponseWrapBase {
   @Response()
-  @Field(() => [ScheduledEvent], { nullable: true })
-  scheduledEvents: ScheduledEvent[];
+  @Field(() => [ScheduledEventWithRejection])
+  scheduledEvents: (ScheduledEvent | Rejection)[];
 }
 
 @ObjectType()
