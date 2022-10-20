@@ -65,7 +65,7 @@ services:
     image: "dmsc/duo-gateway:develop"
     environment:
       USER_OFFICE_BACKEND: http://backend:4000/graphql
-      USER_OFFICE_SCHEDULER_BACKEND: http://host.docker.internal:4000/graphql
+      USER_OFFICE_SCHEDULER_BACKEND: http://host.docker.internal:44000/graphql
       NODE_ENV: development
       ENABLE_SERVICE_POLLING: 1 # see gateway
       KEEP_RETRYING: 1 # see gateway
@@ -74,6 +74,8 @@ services:
     labels:
       - "traefik.frontend.rule=PathPrefix:/graphql"
       - "traefik.port=4100"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
 
   frontend:
     image: "dmsc/duo-frontend:develop"
@@ -94,8 +96,28 @@ services:
       USER_OFFICE_FACTORY_ENDPOINT: http://factory:4500/generate
       RABBITMQ_HOSTNAME: rabbitmq
       DEPENDENCY_CONFIG: ess
+      AUTH_DISCOVERY_URL: http://duo-development-authorization-server:5000/.well-known/openid-configuration
+      AUTH_CLIENT_ID: useroffice
+      AUTH_CLIENT_SECRET: useroffice
     labels:
       - "traefik.frontend.rule=PathPrefix:/api, /downloads, /files, /download, /uploads"
       - "traefik.port=4000"
     ports:
       - 44000:4000 # avoid collision
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - duo-development-authorization-server
+
+  duo-development-authorization-server:
+    image: "dmsc/duo-development-authorization-server:develop"
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://duouser:duopassword@db:5432/duo
+      PORT: 5000
+      ISSUER: http://localhost:5000
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
