@@ -73,16 +73,8 @@ jobs:
 
       # For debugging capture the selected branch
       - name: Extracted branch
-        run: echo "Extracted branch ${{ github.head_ref }} ${{ startsWith(github.head_ref, 'dependabot') }}"
+        run: echo "Extracted branch ${{ github.head_ref }}"
 
-      - name: Echo the actors
-        run: |
-          echo "${{ github.actor }}"
-          echo "${{ github.triggering_actor }}"
-          echo "${{ github.ref_name }}"
-          echo "${{ github.github.head_ref }}"
-          echo "${{ startsWith(github.head_ref, 'dependabot') }}"
-          echo "${{ !startsWith(github.head_ref, 'dependabot') }}"
       - name: Build and push
         # Don't build and push image if dependabot is creating the PR
         if: ${{ !startsWith(github.head_ref, 'dependabot') }}
