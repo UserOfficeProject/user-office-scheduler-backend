@@ -52,6 +52,8 @@ jobs:
         run: |
           echo "${{ github.actor }}"
           echo "${{ github.triggering_actor }}"
+          echo "${{ github.ref_name }}"
+          echo "${{ github.github.head_ref }}"
           echo "${{!startsWith(github.ref_name, 'dependabot')}}"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
