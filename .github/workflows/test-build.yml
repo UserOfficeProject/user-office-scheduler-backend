@@ -49,6 +49,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Echo the actors
+        run: |
+          echo "${{ github.actor }}"
+          echo "${{ github.triggering_actor }}"
+          echo "${{ github.ref_name }}"
+          echo "${{ github.github.head_ref }}"
+          echo "${{ startsWith(github.ref_name, 'dependabot') }}"
+          echo "${{ !startsWith(github.ref_name, 'dependabot') }}"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
