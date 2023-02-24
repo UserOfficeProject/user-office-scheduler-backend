@@ -44,10 +44,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # Don't push the built image if dependabot is creating the PR
-    if: github.actor != 'dependabot[bot]'
+    if: (github.actor != 'dependabot[bot]' && github.triggering_actor != 'dependabot[bot]') || !startsWith(github.ref_name, 'dependabot')
     needs: test
 
     steps:
+      - name: Echo the actors
+        run: |
+          echo "${{ github.actor }}"
+          echo "${{ github.triggering_actor }}"
+          echo "${{!startsWith(github.ref_name, 'dependabot')}}"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
